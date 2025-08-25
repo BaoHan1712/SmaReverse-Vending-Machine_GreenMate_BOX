@@ -3,13 +3,13 @@ from backend_count import *
 # from toUart import *
 
 
-# Màu sắc và bo góc chủ đạo
+# Màu sắc và bo góc chủ đạob
 PRIMARY_GREEN = "#388e3c"      # Xanh lá cây non
 SECONDARY_GREEN = "#b7e4c7"    # Xanh lá nhạt
 YELLOW = "#f9f871"             # Vàng nhạt
 WHITE = "#f6fff8"              # Trắng xanh nhẹ
 DARK_GREEN = "#388e3c"         # Xanh lá đậm
-BORDER_RADIUS = 16              # Bo góc lớn hơn
+BORDER_RADIUS = 0              # Bo góc lớn hơn
 
 class CustomDialog(ctk.CTkToplevel):
     """
@@ -60,7 +60,10 @@ class RecyclingApp(ctk.CTk):
         # Hàm khởi tạo giao diện chính, thiết lập các thành phần và khởi động luồng xử lý YOLO
         super().__init__()
         self.title("Vì môi trường xanh sạch đẹp - Ươm mầm cây xanh non")
-        self.geometry("1350x660")
+        
+        # Adjust the geometry of the window
+        self.geometry("800x480")  
+
         self._set_appearance_mode("light")
         self.configure(bg=SECONDARY_GREEN)
 
@@ -81,7 +84,7 @@ class RecyclingApp(ctk.CTk):
         video_source = 0
         self.yolo_thread = YOLOProcessor(
             video_path=video_source,
-            model_path=r"model/best.pt",
+            model_path="model/best_ncnn_model",
             output_queue=self.yolo_queue
         )
         self.yolo_thread.start()
@@ -125,7 +128,7 @@ class RecyclingApp(ctk.CTk):
             self.logo_label = ctk.CTkLabel(header_container, text="LOGO", width=80, font=ctk.CTkFont(size=20))
             self.logo_label.grid(row=0, column=0, sticky="w")
 
-        title_img = Image.open(r"image\title.png")
+        title_img = Image.open(r"image/title.png")
         title_ctk = ctk.CTkImage(light_image=title_img, size=(300, 80))
         self.title_label = ctk.CTkLabel(header_container, image=title_ctk, text="")
         self.title_label.grid(row=0, column=1, padx=1 ,sticky="ew")
@@ -137,7 +140,7 @@ class RecyclingApp(ctk.CTk):
         confirm_button = ctk.CTkButton(
             self.left_frame, text="Xác nhận số lượng", font=ctk.CTkFont(size=18, weight="bold"),
             fg_color="#F9A825", hover_color="#E89B21", text_color="white", height=50,
-            corner_radius=10, command=self.confirm_and_update_stats
+            corner_radius=BORDER_RADIUS, command=self.confirm_and_update_stats
         )
         confirm_button.grid(row=2, column=0, padx=120, pady=(5, 20), sticky="ew")
 
@@ -177,7 +180,7 @@ class RecyclingApp(ctk.CTk):
 
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             pil_image = Image.fromarray(frame_rgb)
-            ctk_image = ctk.CTkImage(light_image=pil_image, size=(640, 480))
+            ctk_image = ctk.CTkImage(light_image=pil_image, size=(320, 280))
             self.camera_label.configure(image=ctk_image, text="")
             self.camera_label.image = ctk_image
         except queue.Empty:
@@ -204,7 +207,7 @@ class RecyclingApp(ctk.CTk):
         self.right_frame.grid_rowconfigure(4, weight=0)
         
         header_frame = ctk.CTkFrame(self.right_frame, fg_color="transparent")
-        header_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=(0, 20))
+        header_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=(0, 0))
         header_frame.grid_columnconfigure(0, weight=1)
         dashboard_label = ctk.CTkLabel(header_frame, text="Dashboard", font=ctk.CTkFont(size=24, weight="bold"), text_color=DARK_GREEN)
         dashboard_label.grid(row=0, column=0, sticky="w", pady=20)
@@ -212,8 +215,8 @@ class RecyclingApp(ctk.CTk):
         # --- NÚT EXPORT MỚI ---
         try:
 
-            export_icon_path = Image.open(r"image\export.png")
-            export_icon = ctk.CTkImage(light_image=export_icon_path, size=(80, 45))
+            export_icon_path = Image.open(r"image/export.png")
+            export_icon = ctk.CTkImage(light_image=export_icon_path, size=(60, 35))
             export_button = ctk.CTkButton(
                 header_frame, image=export_icon, text="", width=20,
                 fg_color="transparent", hover_color=SECONDARY_GREEN,
@@ -238,23 +241,23 @@ class RecyclingApp(ctk.CTk):
         rewards_header_frame = ctk.CTkFrame(self.right_frame, fg_color="transparent")
         rewards_header_frame.grid(row=2, column=0, sticky="ew", padx=10, pady=(20, 10))
         rewards_header_frame.grid_columnconfigure(0, weight=1)
-        rewards_label = ctk.CTkLabel(rewards_header_frame, text="Phần thưởng có sẵn", font=ctk.CTkFont(size=24, weight="bold"), text_color=DARK_GREEN)
+        rewards_label = ctk.CTkLabel(rewards_header_frame, text="Phần thưởng có sẵn", font=ctk.CTkFont(size=20, weight="bold"), text_color=DARK_GREEN)
         rewards_label.grid(row=0, column=0, sticky="w")
         rewards_grid = ctk.CTkFrame(self.right_frame, fg_color="transparent")
         rewards_grid.grid(row=3, column=0, sticky="nsew", pady=(0, 0))  # bỏ padding dưới
         rewards_grid.grid_columnconfigure((0, 1, 2), weight=1)
         rewards_grid.grid_rowconfigure(0, weight=1)  # cho hàng 0 giãn đều
         reward_items = [
-            (r"image\bottle.png", "5 Điểm", ""), 
-            (r"image\bag.png", "10 Điểm", ""), 
-            (r"image\thermos.png", "30 Điểm", "")
+            (r"image/bottle.png", "5 Điểm", ""), 
+            (r"image/bag.png", "10 Điểm", ""), 
+            (r"image/thermos.png", "30 Điểm", "")
         ]
         for i, item in enumerate(reward_items):
             self.create_reward_card(rewards_grid, 0, i, item[0], item[1], item[2])  # tất cả ở row=0, col=i
 
         reset_button = ctk.CTkButton(
             self.right_frame, text="Đặt lại số liệu", font=ctk.CTkFont(size=20, weight="bold"),
-            fg_color="#F9A825", hover_color="#E89B21", text_color="white", corner_radius=10, command=self.prompt_reset_stats
+            fg_color="#F9A825", hover_color="#E89B21", text_color="white", corner_radius=BORDER_RADIUS, command=self.prompt_reset_stats
         )
         reset_button.grid(row=4, column=0, padx=10, pady=(5, 10), sticky="ew")
 
@@ -325,16 +328,16 @@ class RecyclingApp(ctk.CTk):
         except (AttributeError, ValueError):
             points_needed = 0
         card.bind("<Button-1>", lambda event, p=points_needed: self.prompt_redeem_reward(p))
-        img_placeholder = ctk.CTkFrame(card, fg_color=SECONDARY_GREEN, height=80, corner_radius=BORDER_RADIUS)
+        img_placeholder = ctk.CTkFrame(card, fg_color=SECONDARY_GREEN, height=40, corner_radius=BORDER_RADIUS)
         img_placeholder.pack(fill="x", padx=10, pady=10)
 
         ## KÍCH THƯỚC VẬT PHẨM
         try:
             img = Image.open(image_text)
-            ctk_img = ctk.CTkImage(light_image=img, size=(100, 220))
+            ctk_img = ctk.CTkImage(light_image=img, size=(30, 50))
             ctk.CTkLabel(img_placeholder, image=ctk_img, text="").pack(expand=True)
         except Exception as e:
-            ctk.CTkLabel(img_placeholder, text="? LỖI ảnh", font=ctk.CTkFont(size=(100, 220))).pack(expand=True)
+            ctk.CTkLabel(img_placeholder, text="? LỖI ảnh", font=ctk.CTkFont(size=(50, 100))).pack(expand=True)
             
         points_label = ctk.CTkLabel(card, text=points_text, font=ctk.CTkFont(size=14, weight="bold"), text_color=DARK_GREEN)
         points_label.pack(padx=10, pady=(0, 5))
@@ -392,7 +395,7 @@ def create_splash_screen(master):
 
     # --- Load và xử lý GIF ---
     frames = []
-    gif_path = r"image\giphy.gif"  
+    gif_path = r"image/giphy.gif"  
 
     if os.path.exists(gif_path):
         gif = Image.open(gif_path)
@@ -480,5 +483,12 @@ if __name__ == "__main__":
         app.deiconify()
 
     app.after(3000, show_main_window)
-    app.iconbitmap(r"image\logo.ico") 
+    icon_path = "image/logo.png"
+    if os.path.exists(icon_path):
+        icon_img = Image.open(icon_path)
+        icon_photo = ImageTk.PhotoImage(icon_img)
+        app.wm_iconphoto(False, icon_photo)
+    else:
+        print("⚠️ Không tìm thấy file logo.png để đặt icon")
+    app.mainloop()
     app.mainloop()
