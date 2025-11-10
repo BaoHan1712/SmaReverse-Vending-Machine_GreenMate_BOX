@@ -18,12 +18,12 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
 
 void setup() {
   Serial.begin(9600);
-
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(SERVO_FREQ);
-  delay(500);
-
+  delay(1000);
+  rotate_default();
+  delay(1000);
 }
 
 // ---- Hàm chuyển microsecond -> tick 12-bit ----
@@ -45,7 +45,7 @@ uint16_t angleToPulse(int angle) {
 void moveServo180(int angle, int channel) {
   uint16_t pulse = angleToPulse(angle);
   pwm.setPWM(channel, 0, pulse);
-  delay(500);
+  delay(1000);
 }
 
 /**
@@ -108,9 +108,6 @@ void receive_data() {
 
 // Xử lý servo theo lệnh nhận
 void handle_command(byte command) {
-  Serial.print("Lệnh nhận: ");
-  Serial.println(command, HEX);
-
   switch (command) {
     case 0x01:
     classify_bottle();
@@ -122,46 +119,47 @@ void handle_command(byte command) {
 
     default:
       // Lệnh không hợp lệ
-      Serial.println("Lệnh không hỗ trợ.");
+      // Serial.println("Lệnh không hỗ trợ.");
       break;
   }
 }
 // ham xoay servo ve goc ban dau
 void rotate_default () {
-  moveServo180(90,1); 
-  delay(500);
-  moveServo180(90,0);
-  delay(500);
+  moveServo180(130, 15);
+  moveServo180(90, 14);
+  // delay(1000);
 }
 
 // hàm phân loại chai
 void classify_bottle () {
-  moveServo180(0,1); // nga mang xuong
-  moveServo180(155,0);
+  moveServo180(180, 14); // quay sang trái
+  moveServo180(20,15); // nga mang xuong
   rotate_default();
 }
 
 // hàm phân loại lon
 void classify_can () {
-    moveServo180(0,1); // quay sang phai
-    moveServo180(0,0);
+    moveServo180(0,14); // quay sang phai
+    moveServo180(20,15); // nga mang xuong
     rotate_default();
+}
+
+// Hàm test 5 servo
+void test_servo() {
+  //// xoay servo 180
+  classify_bottle();
+  classify_can();
+  // delay(1000);
+  
+  //// xoay servo 360
+  moveServo360ForTime(-100, 0, 2300);
+  moveServo360ForTime(-100, 1, 2300);
+  moveServo360ForTime(-100, 2, 2300);
 }
 
 
 void loop() {
-  // ----- Servo 180° -----
-  Serial.println("Servo 180° demo");
-  moveServo180(0, 0);
-  delay(1000);
-  moveServo180(90, 0);
-  delay(1000);
-  moveServo180(180, 0);
-  delay(1000);
 
-  // xoay servo 360
-  moveServo360ForTime(80, 3, 2000);
-
-  // receive_data();
+  receive_data();
   
 }

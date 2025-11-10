@@ -1,5 +1,6 @@
 import serial
 import struct
+import time
 
 class ESP32_UART:
     """
@@ -46,23 +47,10 @@ class ESP32_UART:
         """
         self.close()
 
-# # --- VÍ DỤ SỬ DỤNG ---
-# if __name__ == "__main__":
-#     # Thay 'COM3' bằng cổng COM thực tế của ESP32 trên máy bạn
-#     esp32 = ESP32_UART(port='COM3', baudrate=9600)
 
-#     if esp32.ser: # Chỉ chạy nếu kết nối thành công
-#         try:
-#             # Gửi giá trị 10 (0x0A)
-#             esp32.send_packet(10)
-#             time.sleep(1) # Chờ 1 giây
-
-#             # Gửi giá trị 170 (0xAA)
-#             esp32.send_packet(170)
-#             time.sleep(1)
-
-#         except KeyboardInterrupt:
-#             print("\nDừng chương trình.")
-#         finally:
-#             # Luôn đóng kết nối khi kết thúc
-#             esp32.close()
+esp32 = ESP32_UART(port='COM6', baudrate=9600)
+while True:
+    if esp32.ser: # Chỉ chạy nếu kết nối thành công
+        # Gửi giá trị
+        esp32.send_packet(1)
+        time.sleep(1)
