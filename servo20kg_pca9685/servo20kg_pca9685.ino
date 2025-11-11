@@ -23,7 +23,7 @@ void setup() {
   pwm.setPWMFreq(SERVO_FREQ);
   delay(1000);
   rotate_default();
-  delay(1000);
+
 }
 
 // ---- Hàm chuyển microsecond -> tick 12-bit ----
@@ -125,9 +125,8 @@ void handle_command(byte command) {
 }
 // ham xoay servo ve goc ban dau
 void rotate_default () {
-  moveServo180(130, 15);
+  moveServo180(125, 15);
   moveServo180(90, 14);
-  // delay(1000);
 }
 
 // hàm phân loại chai
@@ -145,21 +144,27 @@ void classify_can () {
 }
 
 // Hàm test 5 servo
-void test_servo() {
+void test_servo_180() {
   //// xoay servo 180
   classify_bottle();
   classify_can();
   // delay(1000);
-  
-  //// xoay servo 360
+
+}
+
+void test_servo_360() {
+    
+//   //// xoay servo 360
   moveServo360ForTime(-100, 0, 2300);
   moveServo360ForTime(-100, 1, 2300);
   moveServo360ForTime(-100, 2, 2300);
 }
 
-
 void loop() {
 
   receive_data();
+  // test_servo_180();
+  // test_servo_360();
+
   
 }
